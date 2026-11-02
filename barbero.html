@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel Barbero - Reminder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { 'reminder-dark': '#111111', 'reminder-card': '#1A1A1A', 'reminder-neon': '#D3FF24', 'reminder-gray': '#A0A0A0' }, fontFamily: { sans: ['Poppins', 'sans-serif'] } } }
+        }
+    </script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>body { background-color: #111111; color: white; }</style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D3FF24">
+</head>
+<body class="flex flex-col h-screen antialiased">
+    <main class="flex-1 w-full max-w-md mx-auto p-4 flex flex-col relative">
+        
+        <!-- Header Barbero -->
+        <header class="flex justify-between items-center py-4 mb-6 border-b border-neutral-800 pb-4">
+            <div>
+                <h1 class="font-extrabold text-xl leading-none text-reminder-neon">PANEL OPERATIVO</h1>
+                <p class="text-xs text-reminder-gray uppercase tracking-widest">La Esquina Barber Club</p>
+            </div>
+        </header>
+
+        <!-- Buscador / Escáner -->
+<div id="search-section" class="bg-reminder-card p-6 rounded-2xl border border-neutral-800 mb-6 flex flex-col items-center">
+    <p class="text-sm text-reminder-gray mb-6 text-center">Escanea el código QR del cliente para operar:</p>
+    
+    <!-- Contenedor donde se inyectará el video de la cámara -->
+    <div id="reader" class="w-full max-w-sm overflow-hidden rounded-xl mb-4 hidden border border-neutral-800"></div>
+    
+    <button id="btn-scan" class="w-full bg-white text-black px-6 py-4 rounded-xl font-extrabold flex items-center justify-center gap-2 hover:bg-neutral-200 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+        Escanear QR
+    </button>
+    <button id="btn-cancel-scan" class="w-full mt-2 bg-transparent border border-neutral-800 text-reminder-gray px-6 py-3 rounded-xl font-bold hidden hover:bg-neutral-900">
+        Cancelar
+    </button>
+</div>
+
+        <!-- Panel de Control (Oculto hasta buscar) -->
+        <div id="control-panel" class="hidden flex-1 flex-col">
+            <div class="text-center mb-6">
+                <p class="text-reminder-gray text-sm uppercase tracking-widest">Cliente actual</p>
+                <h2 id="cliente-nombre" class="text-3xl font-extrabold mb-1">Cargando...</h2>
+                <div class="inline-flex items-center gap-2 bg-reminder-card px-4 py-2 rounded-full border border-neutral-800 mt-2">
+                    <span class="w-2 h-2 rounded-full bg-reminder-neon animate-pulse"></span>
+                    <span id="cliente-sellos" class="font-bold text-lg">0 / 10 Sellos</span>
+                </div>
+            </div>
+
+            <!-- Botones Operativos Gigantes -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <button id="btn-restar" class="bg-reminder-card border border-neutral-800 text-white p-6 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-neutral-800 active:scale-95 transition-all">
+                    <span class="text-4xl font-extrabold text-red-500">-1</span>
+                    <span class="text-xs text-reminder-gray font-semibold uppercase">Restar</span>
+                </button>
+                <button id="btn-sumar" class="bg-reminder-neon text-black p-6 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-yellow-400 active:scale-95 shadow-[0_0_20px_rgba(211,255,36,0.2)] transition-all">
+                    <span class="text-4xl font-extrabold">+1</span>
+                    <span class="text-xs font-bold uppercase">Sumar Sello</span>
+                </button>
+            </div>
+            
+            <button id="btn-canjear" class="w-full bg-white text-black font-extrabold p-4 rounded-2xl uppercase tracking-wider mb-4 hidden">
+                🎉 Canjear Corte Gratis 🎉
+            </button>
+
+            <!-- Extra: Botón rápido para limpiar -->
+            <button id="btn-cerrar-cliente" class="w-full bg-transparent border border-neutral-800 text-reminder-gray font-semibold p-4 rounded-2xl hover:bg-neutral-900 transition-all mt-auto">
+                Cerrar cliente y escanear otro
+            </button>
+        </div>
+
+        <!-- Soporte Técnico -->
+        <footer class="mt-auto pt-8 pb-4 text-center">
+            <p class="text-[0.65rem] text-neutral-600 uppercase tracking-widest mb-2 border-t border-neutral-800 pt-4">Soporte Técnico Aplicación</p>
+            <a href="mailto:soporteitmsg@gmail.com" class="text-sm text-reminder-gray block hover:text-white">soporteitmsg@gmail.com</a>
+            <a href="tel:+34674965619" class="text-sm text-reminder-gray font-bold block hover:text-white">+34 674 965 619</a>
+        </footer>
+
+    </main>
+    <script type="module" src="js/barbero.js"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registrado con éxito', reg))
+                .catch(err => console.error('Error al registrar Service Worker', err));
+        });
+    }
+</script>
+</body>
+</html>
