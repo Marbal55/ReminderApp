@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reminder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'reminder-dark': '#111111',
+                        'reminder-card': '#1A1A1A',
+                        'reminder-neon': '#D3FF24',
+                        'reminder-gray': '#A0A0A0'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #111111; color: white; }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D3FF24">
+</head>
+<body class="flex flex-col h-screen antialiased">
+    <!-- Contenedor principal donde inyectaremos las vistas -->
+    <main id="app-container" class="flex-1 w-full max-w-md mx-auto p-4 relative">
+        <div class="flex items-center justify-center h-full">
+            <p class="text-reminder-neon animate-pulse font-extrabold">Cargando Reminder...</p>
+        </div>
+
+        <button id="btn-instalar" class="w-full bg-reminder-neon text-black font-extrabold py-3.5 rounded-xl mt-4 hidden items-center justify-center gap-2 hover:bg-yellow-400 transition">
+            📱 Instalar aplicación Reminder
+        </button>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registrado con éxito', reg))
+                .catch(err => console.error('Error al registrar Service Worker', err));
+        });
+    }
+</script>
+
+</body>
+</html>
